@@ -1,17 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { HttpService } from '@nestjs/axios';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AxiosResponse } from 'axios';
-import { response } from 'express';
-
+import { ClientProxy } from '@nestjs/microservices';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private readonly httpService: HttpService,
+    @Inject('USERS_SERVICE') private rabbitClient: ClientProxy,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -26,10 +26,11 @@ export class UsersService {
         avatar: savedUser.avatar,
       })
       .toPromise();
-
+    this.rabbitClient.emit('user-created', createUserDto);
     return {
       localUser: savedUser,
       reqresUser: reqresResponse.data,
+      message: 'User created!',
     };
   }
 
@@ -40,4 +41,9 @@ export class UsersService {
       .toPromise()
       .then((response) => response.data);
   }
+
+  // async getAvatar(userId: string): Promise<string> {
+  //   const user = await this.userModel;
+  //   return;
+  // }
 }

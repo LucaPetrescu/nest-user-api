@@ -10,6 +10,7 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
     console.log(`Sending email to ${user.email}`);
+
     return user;
   }
 
