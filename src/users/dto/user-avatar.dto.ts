@@ -1,5 +1,5 @@
-export class UserAvatarDto {
-  userId: string;
-  avatar: string;
+export class CreateUserAvatarDto {
+  userId: number;
+  avatarUrl: string;
   avatarHash: string;
 }
