@@ -19,7 +19,8 @@ export class AvatarsController {
 
   @Delete('/user/:userId/avatar')
   async deleteAvatar(@Param('userId') userId: number) {
-    await this.avatarsSevice.deleteAvatar(userId);
-    return { message: `Avatar for userId deleted successfully` };
+    const result = await this.avatarsSevice.deleteAvatar(userId);
+    console.log(result);
+    return { message: 'Deleted succesfully' };
   }
 }

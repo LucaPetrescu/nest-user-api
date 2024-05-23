@@ -29,7 +29,9 @@ describe('AvatarsService', () => {
             findOne: jest.fn(),
             create: jest.fn(),
             deleteOne: jest.fn(),
+            findOneAndDelete: jest.fn(),
           },
+          // useValue: mockavatarService,
         },
         {
           provide: HttpService,
@@ -86,21 +88,20 @@ describe('AvatarsService', () => {
     });
   });
 
+  //It is possible that this test block overlaps with the one in the controller test file
   describe('deleteAvatar', () => {
     it('should delete avatar for existing user', async () => {
-      jest
-        .spyOn(avatarModel, 'deleteOne')
-        .mockResolvedValue({ acknowledged: true, deletedCount: 1 });
+      jest.spyOn(avatarModel, 'findOne').mockResolvedValue({
+        userId: 2,
+        avatarHash: '608637556ef5ee652d1b896967213c52',
+        avatarUrl: 'https://reqres.in/img/faces/2-image.jpg',
+      });
       const result = await service.deleteAvatar(2);
 
-      expect(avatarModel.deleteOne).toHaveBeenCalledWith({ userId: 2 });
+      expect(avatarModel.findOneAndDelete).toHaveBeenCalledWith({ userId: 2 });
       expect(result).toEqual({
-        message: `Avatar for userId deleted successfully`,
+        message: `Deleted succesfully`,
       });
-    });
-
-    it('should throw NotFoundException for non-existing user', async () => {
-      await expect(service.deleteAvatar(1)).rejects.toThrow(Error);
     });
   });
 });

@@ -48,7 +48,7 @@ describe('AvatarsController', () => {
 
       expect(service.deleteAvatar).toHaveBeenCalledWith(2);
       expect(result).toEqual({
-        message: 'Avatar for userId deleted successfully',
+        message: 'Deleted succesfully',
       });
     });
   });
