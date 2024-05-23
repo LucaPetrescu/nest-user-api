@@ -11,6 +11,7 @@ import { promises as fs } from 'fs';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import { Avatar, AvatarDocument } from './schemas/avatar.schema';
+import { MailerService } from '../mailer/mailer.service';
 @Injectable()
 export class UsersService {
   constructor(
@@ -18,6 +19,7 @@ export class UsersService {
     @InjectModel(Avatar.name) private avatarModel: Model<AvatarDocument>,
     private readonly httpService: HttpService,
     @Inject('USERS_SERVICE') private rabbitClient: ClientProxy,
+    private readonly mailerService: MailerService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -33,7 +35,16 @@ export class UsersService {
       })
       .toPromise();
     this.rabbitClient.emit('user-created', createUserDto);
+
+    // This piece of code sends the email
+
+    // await this.mailerService.sendMail(
+    //   savedUser.email,
+    //   'Welcome!',
+    //   'Welcome to our service!',
+    // );
     const result = {
+      email: savedUser.email,
       localUser: savedUser,
       reqresUser: reqresResponse.data,
       message: 'User created!',
