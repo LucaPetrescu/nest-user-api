@@ -66,18 +66,20 @@ export class AvatarsService {
   }
 
   async deleteAvatar(userId: number): Promise<void> {
-    const avatar = await this.avatarModel.findOne({ userId });
-    if (!avatar) {
-      throw new NotFoundException(`Avatar for userId ${userId} not found`);
+    try {
+      const avatar = await this.avatarModel.findOne({ userId: userId });
+      const filePath = path.join(
+        __dirname,
+        '../../avatars',
+        `${avatar.avatarHash}.png`,
+      );
+      await fs.unlink(filePath).catch((err) => {
+        console.error(`Error deleting file: ${err.message}`);
+      });
+      await this.avatarModel.deleteOne({ userId: userId });
+    } catch (e) {
+      console.error(`Error deleting avatar: ${e.message}`);
+      throw new Error('Error deleting avatar');
     }
-    const filePath = path.join(
-      __dirname,
-      '../../avatars',
-      `${avatar.avatarHash}.png`,
-    );
-    await fs.unlink(filePath).catch((err) => {
-      console.error(`Error deleting file: ${err.message}`);
-    });
-    await this.avatarModel.deleteOne({ userId }).exec();
   }
 }

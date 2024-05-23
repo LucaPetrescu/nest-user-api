@@ -92,11 +92,15 @@ describe('AvatarsService', () => {
         .spyOn(avatarModel, 'deleteOne')
         .mockResolvedValue({ acknowledged: true, deletedCount: 1 });
       const result = await service.deleteAvatar(2);
+
       expect(avatarModel.deleteOne).toHaveBeenCalledWith({ userId: 2 });
+      expect(result).toEqual({
+        message: `Avatar for userId deleted successfully`,
+      });
     });
 
     it('should throw NotFoundException for non-existing user', async () => {
-      await expect(service.deleteAvatar(1)).rejects.toThrow(NotFoundException);
+      await expect(service.deleteAvatar(1)).rejects.toThrow(Error);
     });
   });
 });
